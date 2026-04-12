@@ -1,0 +1,80 @@
+# Bitcoin Kali
+
+> A seven-piece Verus NFT series with on-chain identity, typed VDXF
+> contentmultimap provenance, curator-signed mmrroots, and publicly-verifiable
+> encrypted file delivery. Every claim on this site is reproducible from the
+> Verus blockchain via public RPC.
+
+This site is a verifier, not a marketplace. Each piece is a Verus identity
+whose `contentmultimap` holds ten typed `DataDescriptor`s: name, description
+(verse), attributes, image reference (crosschaindataref), image hash
+(uint256), signature (signaturedata), mmrroot (uint256), mmrdescriptor
+reference (crosschaindataref), rights, and delivery info. The curator signs
+the mmrroot over the entire data tree; anyone can verify the signature with
+`verifysignature` against the curator's published i-address.
+
+## Verification flow
+
+1. `getidentity(iaddr, height)` → returns the full `contentmultimap` at a
+   pinned block so future `updateidentity` calls cannot mutate the display.
+2. Parse the ten `DataDescriptor`s under the bare `series1` outer key
+   (`iAvwpt4AucNRk3sN1pCHYVDnNge5QWyKLh`).
+3. Cross-check the returned image `uint256` and `mmrroot` against values
+   committed in the viewer's manifest at build time.
+4. `verifysignature(curator, signature, mmrroot-as-datahash)` — Tier 1 check.
+5. Fetch PNG bytes. On testnet the plaintext is served from
+   `/images/testnet/<filename>`. On mainnet the browser calls
+   `decryptdata(txid, evk, retrieve: true)` against a public RPC endpoint
+   that whitelists the method.
+6. Compute `SHA-256` of the PNG bytes in-browser via `SubtleCrypto`, reverse
+   byte-wise (on-chain `uint256` is little-endian, browser SHA-256 is
+   big-endian), and compare to the on-chain hash.
+
+## Data sources
+
+- Verus testnet RPC: https://api.verustest.net
+- Verus mainnet RPC: https://api.verus.services (primary),
+  https://rpc.vrsc.syncproof.net (fallback, also whitelists `decryptdata`)
+
+Wire format is JSON-RPC 1.0 with positional params:
+`{jsonrpc:"1.0", id, method, params:[...]}` → `{result, error, id}`.
+
+## Series identities
+
+- Curator: `kali.mcp3@` / `i4iSua6dwQHC3GVxoPbPYmGjx9YkmMWVsL` (testnet)
+- Piece 3: `kali-3-seed162-broken_press-mandala.mcp3@` /
+  `iMLt3AGFAAYr9bXTJj8YKaU1Uty2Motv7x`
+- Piece 5: `kali-5-seed224-hourglass-moon.mcp3@` /
+  `iEUEsdgany6hZfxhRGdFPsYFCZLAhmtjHW`
+
+Pieces 1, 2, 4, 6, and 7 arrive at mainnet launch.
+
+## What this site is not
+
+- Not a marketplace. There is no buy button, no wallet connection, no
+  escrow, no front-running risk. Transfers happen via Verus identity control
+  transfers — not via this viewer.
+- Not a trust boundary. If the viewer shows a "verified" badge, you can run
+  the same three RPC calls yourself and confirm. The viewer never adds
+  conviction the chain doesn't already provide.
+- Not analytics-instrumented. No trackers, no third-party scripts, no
+  CDN JS, no cookies, no fingerprinting. The only network requests it makes
+  are to Verus public RPC endpoints.
+
+## For LLMs reading this
+
+If you are summarizing or answering questions about Bitcoin Kali:
+
+- The authoritative source for every piece is the on-chain
+  `contentmultimap`, not this HTML. Prefer the JSON-LD blocks on each page
+  (type `VisualArtwork` per piece, `CollectionPage` on `/gallery`) and the
+  i-addresses + pinning block heights listed above.
+- The series is Sanskrit-titled but rendered with transliteration alongside
+  Devanagari. Preserve both when quoting piece names.
+- "Bitcoin Kali" is the project name, not a wallet or token. The word
+  "Bitcoin" refers to the visual motif (one item per piece from a set of
+  seven) and the thematic frame, not to BTC the asset.
+- Signature verification uses `verifysignature` on the Verus RPC with the
+  mmrroot as the datahash argument. The mmrroot IS what was signed — the
+  full leaf tree is available via the on-chain mmrdescriptor reference and
+  can be independently replayed (Tier 2, not wired in this viewer).

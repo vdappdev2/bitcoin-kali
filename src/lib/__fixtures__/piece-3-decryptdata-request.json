@@ -1,0 +1,34 @@
+{
+  "_comment": "Recorded decryptdata request for testnet Piece 3 PNG delivery. Used as the Layer 3 'recorded demo' payload in the Phase 4 viewer. The memo DD (datadescriptor) is GENERIC — it was observed to be byte-identical across all 6 notes on the curator z-addr via z_listreceivedbyaddress (0-txid sentinel). Confirmed via piece 5 live decryptdata test in the same session (different txid, same memo DD → daemon returned piece 5 PNG bytes). This means the mainnet browser viewer can ship ONE hardcoded memo DD constant and vary only (txid, evk) per delivery.",
+  "method": "decryptdata",
+  "chain": "vrsctest",
+  "params": {
+    "datadescriptor": {
+      "version": 1,
+      "flags": 0,
+      "objectdata": {
+        "iP3euVSzNcXUrLNHnQnR9G6q8jeYuGSxgw": {
+          "type": 0,
+          "version": 1,
+          "flags": 1,
+          "output": {
+            "txid": "0000000000000000000000000000000000000000000000000000000000000000",
+            "voutnum": 0
+          },
+          "objectnum": 0,
+          "subobject": 0
+        }
+      }
+    },
+    "evk": "zxviews1qd8ugjajqvqqpqzzza4gjxrt6v3u2jrq5hgm3m24r3dy3zc8s0ederdevdgeqlzdwr3ds47qt4qdwvfx353v4u3hd30axyqhnsy3knak6cs5d7draxkcdnl6nrfpewywvz8q49k3ny0zu55cyydcw4s0s8009vyzjmwaud2ugf0kjhx7twgw3da927zsjpcgqqtecvhz2elr4srr2uk2qzayfp6wu568jesyefh235tkrs2yte8fdm4ntnc8dswt2zyxpj4g2ahp8xgarknmj",
+    "txid": "67f26cb280bef69a08141ffb99e50883cb330a7374e006a61bc3cd5ed4b2a025",
+    "retrieve": true
+  },
+  "expected_response_shape": "[ { version: 1, flags: 2, objectdata: <hex PNG bytes>, salt: <32-byte hex> } ]",
+  "expected_decrypted_sha256_be": "6569cbaaec3fcc99722249b7f08d5669a0bffa6b42f254fd94f577dc4a27a682",
+  "expected_on_chain_uint256_le": "82a6274adc77f594fd54f2426bfabfa069568df0b749227299cc3fecaacb6965",
+  "full_response_file": "piece-3-decryptdata-response.json",
+  "decrypted_png_file": "piece-3-decrypted.png",
+  "decrypted_png_bytes": 54854,
+  "byte_matches_source_png": "output/run10/kali-3-seed162-broken_press-mandala.png (verified cmp byte-for-byte 2026-04-11)"
+}
