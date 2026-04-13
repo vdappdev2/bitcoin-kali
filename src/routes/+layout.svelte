@@ -28,8 +28,8 @@
   <nav aria-label="Primary">
     <a href="/gallery">Gallery</a>
     <a href="/curator">Curator</a>
-    <span class="dim" aria-disabled="true">Learn</span>
-    <span class="dim" aria-disabled="true">About</span>
+    <a href="/learn">Learn</a>
+    <a href="/about">About</a>
   </nav>
 </header>
 
@@ -99,11 +99,6 @@
   nav a:hover {
     border-bottom-color: var(--color-vermilion);
   }
-  nav .dim {
-    color: var(--color-ash);
-    cursor: default;
-  }
-
   main {
     min-height: 60vh;
   }

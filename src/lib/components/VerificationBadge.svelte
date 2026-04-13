@@ -79,15 +79,6 @@
   header {
     margin-bottom: var(--space-3);
   }
-  .section-label {
-    margin: 0 0 0.2rem 0;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--color-ash);
-    font-weight: 400;
-  }
   .status {
     margin: 0;
     display: flex;

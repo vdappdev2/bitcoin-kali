@@ -152,14 +152,6 @@
   .curator-bar code {
     color: var(--color-ivory-dim);
   }
-  .truncate {
-    display: inline-block;
-    max-width: 22ch;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: bottom;
-    white-space: nowrap;
-  }
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));

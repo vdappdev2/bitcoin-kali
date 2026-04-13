@@ -347,17 +347,6 @@
     color: var(--color-ash);
     cursor: default;
   }
-  .walk-hint {
-    font-size: 0.78rem;
-    color: var(--color-ash);
-    font-style: italic;
-  }
-  .walk-hint code {
-    font-style: normal;
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-  }
-
   .drawer {
     max-width: var(--measure-wide);
   }
