@@ -8,7 +8,7 @@
 
 <article class="learn-topic">
   <header>
-    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 7 of 8</p>
+    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 7 of 10</p>
     <h1>On-Chain Rights</h1>
     <p class="lede">
       The rights assertion is signed into the same Merkle tree as the

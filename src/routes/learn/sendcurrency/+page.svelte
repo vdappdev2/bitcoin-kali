@@ -8,7 +8,7 @@
 
 <article class="learn-topic">
   <header>
-    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 6 of 8</p>
+    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 6 of 10</p>
     <h1>sendcurrency</h1>
     <p class="lede">
       The PNG you see in the gallery was decrypted from the Verus blockchain

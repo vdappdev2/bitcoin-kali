@@ -54,6 +54,18 @@ export const LEARN_TOPICS: LearnTopic[] = [
     subtitle: 'How all the pieces compose into zero-trust verification',
     position: 8,
   },
+  {
+    slug: 'control-tokens',
+    title: 'ID Control Tokens',
+    subtitle: 'How definecurrency creates a transferable token bound to an identity',
+    position: 9,
+  },
+  {
+    slug: 'marketplace',
+    title: 'Verus Marketplace',
+    subtitle: 'Decentralized atomic swaps with makeoffer, getoffers, and takeoffer',
+    position: 10,
+  },
 ];
 
 export function getAdjacentTopics(slug: string): {

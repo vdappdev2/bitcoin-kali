@@ -8,7 +8,7 @@
 
 <article class="learn-topic">
   <header>
-    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 2 of 8</p>
+    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 2 of 10</p>
     <h1>contentmultimap</h1>
     <p class="lede">
       Every Verus identity carries a built-in key-value store, and this

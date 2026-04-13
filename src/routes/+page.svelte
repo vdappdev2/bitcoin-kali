@@ -25,6 +25,10 @@
 <svelte:head>
   <title>Bitcoin Kali — a seven-piece Verus NFT series with on-chain provenance</title>
   <meta
+    name="description"
+    content="Seven generative digital works, each a Verus identity. Typed VDXF contentmultimap provenance, curator-signed mmrroots, publicly-verifiable encrypted delivery."
+  />
+  <meta
     property="og:title"
     content="Bitcoin Kali — a seven-piece Verus NFT series"
   />

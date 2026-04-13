@@ -8,7 +8,7 @@
 
 <article class="learn-topic">
   <header>
-    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 8 of 8</p>
+    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 8 of 10</p>
     <h1>The Trust Model</h1>
     <p class="lede">
       Five independent verification paths, zero trusted servers.

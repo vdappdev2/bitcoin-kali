@@ -8,7 +8,7 @@
 
 <article class="learn-topic">
   <header>
-    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 4 of 8</p>
+    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 4 of 10</p>
     <h1>verifysignature</h1>
     <p class="lede">
       One RPC call. No API key. No account. Pass the data, pass the

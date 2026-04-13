@@ -8,7 +8,7 @@
 
 <article class="learn-topic">
   <header>
-    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 3 of 8</p>
+    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 3 of 10</p>
     <h1>signdata</h1>
     <p class="lede">
       Six pieces of data, one signature, one provable tree.

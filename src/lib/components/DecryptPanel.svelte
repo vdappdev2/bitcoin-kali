@@ -265,7 +265,7 @@
   </details>
 
   <p class="learn-links">
-    <a href="/learn/sendcurrency-files">How sendcurrency file delivery works →</a>
+    <a href="/learn/sendcurrency">How sendcurrency file delivery works →</a>
   </p>
 </section>
 

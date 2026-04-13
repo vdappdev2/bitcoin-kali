@@ -8,7 +8,7 @@
 
 <article class="learn-topic">
   <header>
-    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 1 of 8</p>
+    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 1 of 10</p>
     <h1>VDXF Keys</h1>
     <p class="lede">
       A URI goes in, a deterministic i-address comes out — no registration,

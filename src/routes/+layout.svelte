@@ -28,6 +28,7 @@
   <nav aria-label="Primary">
     <a href="/gallery">Gallery</a>
     <a href="/curator">Curator</a>
+    <a href="/offers">Offers</a>
     <a href="/learn">Learn</a>
     <a href="/about">About</a>
   </nav>

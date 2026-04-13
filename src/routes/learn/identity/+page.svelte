@@ -8,7 +8,7 @@
 
 <article class="learn-topic">
   <header>
-    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 5 of 8</p>
+    <p class="eyebrow">Learn &nbsp;·&nbsp; Topic 5 of 10</p>
     <h1>VerusID</h1>
     <p class="lede">
       Each artwork isn't stored on an identity — it <em>is</em> an identity.
