@@ -12,16 +12,21 @@ type LivePieceData = {
   piece: PieceManifest;
   name: string;
   filename: string;
+  deliveryTxid: string;
+  evk: string;
 };
 
 export async function load() {
   let curator: CuratorContent;
+  let curatorName: string;
   try {
     const { data: raw } = await rpcCall<unknown>(CHAIN, 'getidentity', [
       MANIFEST.curator.iaddr,
       MANIFEST.curator.pinnedHeight,
     ]);
     curator = parseCurator(raw);
+    const r = raw as { friendlyname?: string };
+    curatorName = r.friendlyname ?? MANIFEST.curator.friendlyName;
   } catch (err) {
     throw error(
       500,
@@ -52,6 +57,8 @@ export async function load() {
         piece,
         name: content.name,
         filename: content.delivery.filename,
+        deliveryTxid: content.delivery.txid,
+        evk: content.delivery.evk,
       });
     } catch (err) {
       throw error(
@@ -63,7 +70,7 @@ export async function load() {
 
   return {
     curator,
+    curatorName,
     livePieces,
-    staticImagesDir: CHAIN.staticImagesDir,
   };
 }

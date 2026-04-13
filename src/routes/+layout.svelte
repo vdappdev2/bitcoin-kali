@@ -40,11 +40,10 @@
 <footer class="site-footer">
   <p class="line">
     Seven generative works. Signed leaves, typed contentmultimap, publicly-verifiable delivery.
-    Anyone can run the same checks the viewer does — nothing here requires trust in us.
+    Anyone can run the same checks the viewer does.
   </p>
   <p class="line meta">
-    Chain: <ChainBadge chain={CHAIN_NAME} /> &nbsp;·&nbsp; Phase 4 preview &nbsp;·&nbsp;
-    Source of truth: the Verus blockchain.
+    <ChainBadge chain={CHAIN_NAME} />
   </p>
 </footer>
 

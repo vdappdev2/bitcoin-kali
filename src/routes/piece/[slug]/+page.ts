@@ -56,6 +56,5 @@ export async function load({ params }) {
     content,
     identityName,
     identityAddress,
-    staticImagesDir: CHAIN.staticImagesDir,
   };
 }

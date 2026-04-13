@@ -26,6 +26,5 @@ export async function load() {
     curator,
     curatorManifest: MANIFEST.curator,
     pieces: MANIFEST.pieces,
-    staticImagesDir: CHAIN.staticImagesDir,
   };
 }

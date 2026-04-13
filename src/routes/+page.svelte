@@ -40,7 +40,7 @@
 
 <article class="home">
   <header class="hero">
-    <p class="eyebrow">Series 1 &nbsp;·&nbsp; {liveCount} of {SERIES_TOTAL} live on {CHAIN_NAME}</p>
+    <p class="eyebrow">Series 1 &nbsp;·&nbsp; live on Verus</p>
     <h1>
       <span class="devanagari" lang="sa">बिटकॉइन काली</span>
       <span class="translit">Bitcoin Kali</span>

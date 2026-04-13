@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { CHAIN } from '$lib/env';
+  import { fetchPngBytes } from '$lib/verify';
   import type { PieceManifest } from '$lib/manifest';
 
   type LiveProps = {
@@ -6,6 +9,9 @@
     piece: PieceManifest;
     name: string;
     imageUrl: string | null;
+    deliveryTxid: string;
+    evk: string;
+    filename: string;
   };
   type PlaceholderProps = {
     kind: 'placeholder';
@@ -13,14 +19,30 @@
   };
 
   let props: LiveProps | PlaceholderProps = $props();
+
+  let blobUrl: string | null = $state(null);
+
+  const resolvedUrl = $derived(
+    props.kind === 'live' ? (props.imageUrl ?? blobUrl) : null
+  );
+
+  onMount(() => {
+    if (props.kind !== 'live' || props.imageUrl) return;
+    fetchPngBytes(CHAIN, props.filename, props.deliveryTxid, props.evk)
+      .then((bytes) => {
+        blobUrl = URL.createObjectURL(new Blob([bytes], { type: 'image/png' }));
+      })
+      .catch(() => {});
+    return () => { if (blobUrl) URL.revokeObjectURL(blobUrl); };
+  });
 </script>
 
 {#if props.kind === 'live'}
   <a class="tile live" href="/piece/{props.piece.slug}" aria-label="View piece {props.piece.position}: {props.name}">
     <figure>
-      {#if props.imageUrl}
+      {#if resolvedUrl}
         <img
-          src={props.imageUrl}
+          src={resolvedUrl}
           alt="Generative artwork for {props.name} — Bitcoin Kali Series 1 piece {props.piece.position} of 7"
           loading="lazy"
           decoding="async"

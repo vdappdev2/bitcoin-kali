@@ -10,13 +10,8 @@ export type ChainConfig = {
   curatorIaddr: string;
   /** Bare series1 outer-key vdxfid (same on both chains). */
   outerKeyVdxfid: string;
-  /**
-   * Static image directory for plaintext PNG serving (testnet only).
-   * Mainnet sets this to null and uses decryptdata instead.
-   */
-  staticImagesDir: string | null;
-  /** Whether decryptdata is callable on one of the endpoints. */
-  hasDecryptData: boolean;
+  /** Endpoint that serves decryptdata (may differ from the primary RPC). */
+  decryptEndpoint: string;
 };
 
 export const TESTNET: ChainConfig = {
@@ -24,20 +19,15 @@ export const TESTNET: ChainConfig = {
   endpoints: ['https://api.verustest.net'],
   curatorIaddr: 'i4iSua6dwQHC3GVxoPbPYmGjx9YkmMWVsL',
   outerKeyVdxfid: SERIES1_OUTER_KEY,
-  staticImagesDir: '/images/testnet/',
-  hasDecryptData: false,
+  decryptEndpoint: '',
 };
 
 export const MAINNET: ChainConfig = {
   name: 'mainnet',
   endpoints: ['https://api.verus.services', 'https://rpc.vrsc.syncproof.net'],
-  // Curator i-address on mainnet — TBD Phase 6. Using a placeholder sentinel
-  // until the mainnet registration lands; anything using this value at
-  // runtime will fail loudly instead of silently querying the wrong identity.
-  curatorIaddr: 'MAINNET_CURATOR_TBD',
+  curatorIaddr: 'i5FXH74Xnqm3AS6iWJSLoMW1PZaev2F1bj',
   outerKeyVdxfid: SERIES1_OUTER_KEY,
-  staticImagesDir: null,
-  hasDecryptData: true,
+  decryptEndpoint: 'https://rpc.vrsc.syncproof.net',
 };
 
 export function getChainConfig(name: ChainName): ChainConfig {

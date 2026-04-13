@@ -72,7 +72,7 @@ export function crossCheckManifest(
   return { ok: issues.length === 0, issues };
 }
 
-// ── PNG bytes fetching (testnet static, mainnet decryptdata) ──────────────
+// ── PNG bytes fetching (always via decryptdata) ─────────────────────────
 
 /**
  * Generic memo DD used for every sendcurrency file delivery. Observed byte-
@@ -105,41 +105,35 @@ export type DecryptDataResponse = Array<{
   salt: string;
 }>;
 
+/** In-memory cache: deliveryTxid → PNG bytes. Survives navigation within
+ *  a single session so the gallery ↔ piece transitions don't re-decrypt. */
+const pngCache = new Map<string, Uint8Array>();
+
 /**
- * Fetch the PNG bytes for a piece.
+ * Fetch the PNG bytes for a piece via `decryptdata`.
  *
- * Testnet: the plaintext PNG is committed in `static/images/testnet/` and
- * served by SvelteKit's adapter-static. This path still hash-checks against
- * the on-chain uint256 — same cryptographic guarantee, just skipping the
- * decrypt step we can't publicly perform on testnet.
- *
- * Mainnet: calls `decryptdata` with the hardcoded generic memo DD + the
- * per-piece (txid, evk). Returns the decrypted PNG bytes.
+ * Calls the chain's dedicated `decryptEndpoint` directly (skipping the
+ * general failover loop) so we don't waste a round-trip on endpoints
+ * that don't whitelist decryptdata. Results are cached in memory.
  */
 export async function fetchPngBytes(
   chain: ChainConfig,
-  filename: string,
+  _filename: string,
   deliveryTxid: string,
   evk: string
 ): Promise<Uint8Array> {
-  if (chain.staticImagesDir) {
-    const url = `${chain.staticImagesDir}${filename}`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error(`fetchPngBytes: ${url} → HTTP ${res.status}`);
-    }
-    return new Uint8Array(await res.arrayBuffer());
-  }
+  const cached = pngCache.get(deliveryTxid);
+  if (cached) return cached;
 
-  if (!chain.hasDecryptData) {
-    throw new Error(
-      `fetchPngBytes: chain ${chain.name} has neither static images nor decryptdata`
-    );
-  }
+  // Target the decrypt endpoint directly.
+  const decryptChain: ChainConfig = {
+    ...chain,
+    endpoints: [chain.decryptEndpoint],
+  };
 
   try {
     const { data } = await rpcCall<DecryptDataResponse>(
-      chain,
+      decryptChain,
       'decryptdata',
       [
         {
@@ -149,9 +143,6 @@ export async function fetchPngBytes(
           retrieve: true,
         },
       ],
-      // -5 "Invalid data descriptor or cannot decrypt" is a valid domain
-      // error that means the decrypt attempt ran but didn't yield bytes —
-      // surface it to the UI rather than treating it as a network failure.
       (err) => err.code === -5
     );
     if (!Array.isArray(data) || data.length === 0) {
@@ -161,7 +152,9 @@ export async function fetchPngBytes(
     if (typeof hex !== 'string') {
       throw new Error('fetchPngBytes: decryptdata result missing objectdata hex');
     }
-    return hexToBytes(hex);
+    const bytes = hexToBytes(hex);
+    pngCache.set(deliveryTxid, bytes);
+    return bytes;
   } catch (err) {
     if (err instanceof RpcDomainError) {
       throw new Error(

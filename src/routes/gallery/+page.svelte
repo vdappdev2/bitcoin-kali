@@ -38,10 +38,7 @@
               name: live.name,
               identifier: live.piece.iaddr,
               url: `/piece/${live.piece.slug}`,
-              image:
-                data.staticImagesDir !== null
-                  ? `${data.staticImagesDir}${live.filename}`
-                  : undefined,
+              image: undefined,
             },
           };
         }
@@ -77,18 +74,20 @@
 
 <article class="gallery">
   <header>
-    <p class="eyebrow">Series 1 &nbsp;·&nbsp; {data.livePieces.length} of {SERIES_TOTAL} live on {CHAIN_NAME}</p>
+    <p class="eyebrow">Series 1 &nbsp;·&nbsp; live on Verus</p>
     <h1>Gallery</h1>
     <p class="lede">
-      The seven pieces. Click a live tile to open the verification view. Tiles in the
-      hatched state are reserved positions that arrive at mainnet launch.
+      Every image is decrypted live from the Verus blockchain
+      via <code>decryptdata</code> — nothing is stored on this server. Click a tile
+      to view contentmultimap details and verification.
     </p>
   </header>
 
   <section class="curator-bar" aria-label="Curator">
     <p class="meta">
-      Curated by <code>{data.curator.delivery.deliveries[0]?.identity?.split('-')[0] ?? 'kali.mcp3'}@</code>
-      &nbsp;·&nbsp; delivery z-addr <code class="truncate">{data.curator.delivery.zaddr}</code>
+      Curated by <code>{data.curatorName}</code>
+      <br />
+      Delivery <code>{data.curator.delivery.zaddr}</code>
     </p>
   </section>
 
@@ -100,9 +99,10 @@
           kind="live"
           piece={live.piece}
           name={live.name}
-          imageUrl={data.staticImagesDir !== null
-            ? `${data.staticImagesDir}${live.filename}`
-            : null}
+          imageUrl={null}
+          deliveryTxid={live.deliveryTxid}
+          evk={live.evk}
+          filename={live.filename}
         />
       {:else}
         <GalleryTile kind="placeholder" position={pos} />

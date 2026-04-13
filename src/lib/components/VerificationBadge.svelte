@@ -35,7 +35,6 @@
 
 <aside class="badge" class:ok={allOk} aria-label="Verification summary">
   <header>
-    <p class="section-label">Verification</p>
     <p class="status">
       {#if allOk}
         <span class="mark" aria-hidden="true">✓</span>
@@ -69,7 +68,7 @@
 
 <style>
   .badge {
-    margin: var(--space-6) 0;
+    margin: 0;
     padding: var(--space-4);
     border: 1px solid var(--color-hairline);
     background: var(--color-ink-2);

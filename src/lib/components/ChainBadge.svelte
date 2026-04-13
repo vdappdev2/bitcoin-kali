@@ -9,7 +9,7 @@
   class:mainnet={chain === 'mainnet'}
   aria-label="Current chain: {chain}"
 >
-  {chain}
+  {chain === 'mainnet' ? 'VERUS' : chain}
 </span>
 
 <style>

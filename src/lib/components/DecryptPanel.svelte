@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CHAIN, CHAIN_NAME } from '$lib/env';
+  import { CHAIN } from '$lib/env';
   import type { NftContent } from '$lib/cmm';
   import type { PieceManifest } from '$lib/manifest';
   import { GENERIC_MEMO_DD, fetchPngBytes } from '$lib/verify';
@@ -13,8 +13,6 @@
   let computedHashBE = $state('');
   let computedHashLE = $state('');
   let drawerEl: HTMLDetailsElement | undefined = $state();
-
-  const isTestnet = CHAIN_NAME === 'testnet';
 
   const requestParams = $derived({
     datadescriptor: GENERIC_MEMO_DD,
@@ -42,19 +40,12 @@
     walkState = 'fetching';
 
     try {
-      if (CHAIN.hasDecryptData) {
-        pngBytes = await fetchPngBytes(
-          CHAIN,
-          content.delivery.filename,
-          content.delivery.txid,
-          content.delivery.evk
-        );
-      } else {
-        const url = `${CHAIN.staticImagesDir}${content.delivery.filename}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        pngBytes = new Uint8Array(await res.arrayBuffer());
-      }
+      pngBytes = await fetchPngBytes(
+        CHAIN,
+        content.delivery.filename,
+        content.delivery.txid,
+        content.delivery.evk
+      );
     } catch (err) {
       errorMsg = err instanceof Error ? err.message : String(err);
       walkState = 'error';
@@ -81,8 +72,6 @@
 </script>
 
 <section class="decrypt" aria-label="Decrypt walkthrough for {content.name}">
-  <h2 class="section-label">Delivery &amp; Decrypt</h2>
-
   <p class="explainer">
     The extended viewing key (evk) is published on-chain inside the curator identity.
     Anyone who reads the chain can combine the evk with a delivery transaction ID and
@@ -117,18 +106,13 @@
       disabled={walkState !== 'idle' && walkState !== 'done' && walkState !== 'error'}
     >
       {#if walkState === 'idle'}
-        {isTestnet ? 'Walk through decryptdata' : 'Decrypt live in browser'}
+        Decrypt live in browser
       {:else if walkState === 'done' || walkState === 'error'}
         Run again
       {:else}
         Running…
       {/if}
     </button>
-    {#if isTestnet && walkState === 'idle'}
-      <span class="walk-hint">
-        Simulated — testnet serves the PNG directly. On mainnet this calls <code>decryptdata</code> live.
-      </span>
-    {/if}
   </div>
 
   <details class="drawer" bind:this={drawerEl}>
@@ -154,24 +138,16 @@
         >
           <header class="ws-head">
             <span class="ws-num">1</span>
-            <span class="ws-label">
-              {isTestnet ? 'Construct the decryptdata request' : 'Send decryptdata request'}
-            </span>
+            <span class="ws-label">Send decryptdata request</span>
             <span class="ws-status">
               {#if walkState === 'request'}building…{:else}✓{/if}
             </span>
           </header>
           <div class="ws-body">
             <p class="ws-detail">
-              {#if isTestnet}
-                This is the JSON-RPC request the daemon receives. On testnet
-                <code>decryptdata</code> is not publicly exposed, so the viewer
-                fetches the static PNG instead — but the hash check is identical.
-              {:else}
-                Sending to <code>decryptdata</code> on the Verus mainnet RPC.
+                Sending to <code>decryptdata</code> on the Verus RPC.
                 The daemon uses the evk to locate the shielded note, then decrypts
                 and returns the raw PNG bytes.
-              {/if}
             </p>
             <pre class="request-json"><code>{requestJson}</code></pre>
           </div>
@@ -187,9 +163,7 @@
           >
             <header class="ws-head">
               <span class="ws-num">2</span>
-              <span class="ws-label">
-                {isTestnet ? 'Fetch PNG bytes' : 'Daemon decrypts shielded note'}
-              </span>
+              <span class="ws-label">Daemon decrypts shielded note</span>
               <span class="ws-status">
                 {#if walkState === 'fetching'}fetching…
                 {:else if walkState === 'error'}✗
@@ -201,15 +175,9 @@
                 <p class="ws-error"><strong>Error:</strong> {errorMsg}</p>
               {:else if pngBytes}
                 <p class="ws-detail">
-                  {#if isTestnet}
-                    Fetched the static PNG from the viewer. These are the same bytes
-                    that <code>decryptdata</code> returns on mainnet — the on-chain
-                    uint256 is computed from them.
-                  {:else}
                     The daemon decrypted the shielded note and returned the raw file
                     bytes. The response contains <code>objectdata</code> (hex-encoded
                     PNG), a version, flags, and a 32-byte salt.
-                  {/if}
                 </p>
                 <dl class="ws-values">
                   <div class="row">
@@ -303,19 +271,7 @@
 
 <style>
   .decrypt {
-    margin: var(--space-6) 0;
-    padding-top: var(--space-5);
-    border-top: 1px solid var(--color-hairline);
-  }
-
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--color-ash);
-    font-weight: 400;
-    margin-bottom: var(--space-3);
+    margin: 0;
   }
 
   .explainer {

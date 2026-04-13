@@ -1,10 +1,13 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import PieceHeader from '$lib/components/PieceHeader.svelte';
   import AttributesTable from '$lib/components/AttributesTable.svelte';
   import RightsBlock from '$lib/components/RightsBlock.svelte';
   import VerificationBadge from '$lib/components/VerificationBadge.svelte';
   import VerificationTheatre from '$lib/components/VerificationTheatre.svelte';
   import DecryptPanel from '$lib/components/DecryptPanel.svelte';
+  import { CHAIN } from '$lib/env';
+  import { fetchPngBytes } from '$lib/verify';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -12,13 +15,17 @@
   const content = $derived(data.content);
   const identityName = $derived(data.identityName);
   const identityAddress = $derived(data.identityAddress);
-  const staticImagesDir = $derived(data.staticImagesDir);
 
-  const imageUrl = $derived(
-    staticImagesDir !== null
-      ? `${staticImagesDir}${content.delivery.filename}`
-      : null
-  );
+  let imageUrl: string | null = $state(null);
+
+  onMount(() => {
+    fetchPngBytes(CHAIN, content.delivery.filename, content.delivery.txid, content.delivery.evk)
+      .then((bytes) => {
+        imageUrl = URL.createObjectURL(new Blob([bytes], { type: 'image/png' }));
+      })
+      .catch(() => {});
+    return () => { if (imageUrl) URL.revokeObjectURL(imageUrl); };
+  });
 
   const metaDescription = $derived(
     `${content.name} — Bitcoin Kali Series 1, piece ${piece.position} of 7. ` +
@@ -128,65 +135,82 @@
 
   <AttributesTable attributes={content.attributes} />
 
-  <VerificationBadge {content} {piece} />
-
-  <section class="theatre-links" aria-label="Live verification options">
-    <a class="theatre-cta" href="/verify/{piece.slug}">
-      Run the full six-step verification theatre →
-    </a>
-    <details class="drawer">
-      <summary>Or open the live theatre inline on this page</summary>
-      <VerificationTheatre {piece} variant="drawer" />
+  <section class="collapsible-section" aria-label="Verification">
+    <details class="section-drawer">
+      <summary><h2 class="section-label">Verification</h2></summary>
+      <div class="section-body">
+        <VerificationBadge {content} {piece} />
+        <div class="theatre-links">
+          <a class="theatre-cta" href="/verify/{piece.slug}">
+            Run the full six-step verification theatre →
+          </a>
+          <details class="drawer">
+            <summary>Or open the live theatre inline on this page</summary>
+            <VerificationTheatre {piece} variant="drawer" />
+          </details>
+        </div>
+      </div>
     </details>
   </section>
 
   <RightsBlock text={content.rights} />
 
-  <section class="provenance" aria-label="Provenance details">
-    <h2 class="section-label">Provenance</h2>
-    <dl>
-      <div class="row">
-        <dt>Curator identity</dt>
-        <dd><code>{content.signature.identityid}</code></dd>
+  <section class="collapsible-section" aria-label="Provenance details">
+    <details class="section-drawer">
+      <summary><h2 class="section-label">Provenance</h2></summary>
+      <div class="section-body">
+        <dl>
+          <div class="row">
+            <dt>Curator identity</dt>
+            <dd><code>{content.signature.identityid}</code></dd>
+          </div>
+          <div class="row">
+            <dt>Image reference (tx)</dt>
+            <dd>
+              <code class="hex">{content.imageRef.txid}</code>
+              <span class="vout">vout {content.imageRef.voutnum}</span>
+            </dd>
+          </div>
+          <div class="row">
+            <dt>mmrdescriptor (tx)</dt>
+            <dd>
+              <code class="hex">{content.mmrdescriptorRef.txid}</code>
+              <span class="vout">vout {content.mmrdescriptorRef.voutnum}</span>
+            </dd>
+          </div>
+          <div class="row">
+            <dt>Signature (base64)</dt>
+            <dd><code class="hex">{content.signature.signature}</code></dd>
+          </div>
+          <div class="row">
+            <dt>Bound vdxfkeys</dt>
+            <dd>
+              {#each content.signature.vdxfkeys as key (key)}
+                <code class="hex block">{key}</code>
+              {/each}
+            </dd>
+          </div>
+          <div class="row">
+            <dt>Registration block</dt>
+            <dd><code>{piece.registrationHeight}</code></dd>
+          </div>
+          <div class="row">
+            <dt>Signature block</dt>
+            <dd><code>{piece.signatureHeight}</code></dd>
+          </div>
+        </dl>
       </div>
-      <div class="row">
-        <dt>Image reference (tx)</dt>
-        <dd>
-          <code class="hex">{content.imageRef.txid}</code>
-          <span class="vout">vout {content.imageRef.voutnum}</span>
-        </dd>
-      </div>
-      <div class="row">
-        <dt>mmrdescriptor (tx)</dt>
-        <dd>
-          <code class="hex">{content.mmrdescriptorRef.txid}</code>
-          <span class="vout">vout {content.mmrdescriptorRef.voutnum}</span>
-        </dd>
-      </div>
-      <div class="row">
-        <dt>Signature (base64)</dt>
-        <dd><code class="hex">{content.signature.signature}</code></dd>
-      </div>
-      <div class="row">
-        <dt>Bound vdxfkeys</dt>
-        <dd>
-          {#each content.signature.vdxfkeys as key (key)}
-            <code class="hex block">{key}</code>
-          {/each}
-        </dd>
-      </div>
-      <div class="row">
-        <dt>Registration block</dt>
-        <dd><code>{piece.registrationHeight}</code></dd>
-      </div>
-      <div class="row">
-        <dt>Signature block</dt>
-        <dd><code>{piece.signatureHeight}</code></dd>
-      </div>
-    </dl>
+    </details>
   </section>
 
-  <DecryptPanel {content} {piece} />
+  <section class="collapsible-section" aria-label="Delivery and decrypt">
+    <details class="section-drawer">
+      <summary><h2 class="section-label">Delivery &amp; Decrypt</h2></summary>
+      <div class="section-body">
+        <DecryptPanel {content} {piece} />
+      </div>
+    </details>
+  </section>
 
   <nav class="footer-nav" aria-label="Piece navigation">
     <a href="/gallery">← Back to gallery</a>
@@ -248,13 +272,36 @@
     letter-spacing: 0.18em;
     color: var(--color-ash);
     font-weight: 400;
-    margin-bottom: var(--space-3);
+    margin: 0;
+    display: inline;
   }
 
-  .provenance {
+  .collapsible-section {
     margin: var(--space-6) 0;
     padding-top: var(--space-5);
     border-top: 1px solid var(--color-hairline);
+  }
+  .section-drawer summary {
+    cursor: pointer;
+    list-style: none;
+    outline-offset: 4px;
+  }
+  .section-drawer summary::-webkit-details-marker {
+    display: none;
+  }
+  .section-drawer .section-label::before {
+    content: '▸ ';
+    color: var(--color-vermilion);
+    display: inline;
+  }
+  .section-drawer[open] .section-label::before {
+    content: '▾ ';
+  }
+  .section-drawer summary:hover .section-label {
+    color: var(--color-vermilion);
+  }
+  .section-body {
+    margin-top: var(--space-3);
   }
   dl {
     display: grid;
@@ -297,9 +344,7 @@
   }
 
   .theatre-links {
-    margin: var(--space-6) 0;
-    padding-top: var(--space-5);
-    border-top: 1px solid var(--color-hairline);
+    margin-top: var(--space-4);
   }
   .theatre-cta {
     display: inline-block;
