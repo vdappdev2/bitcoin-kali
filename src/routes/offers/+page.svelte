@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { CHAIN, MANIFEST } from '$lib/env';
   import { rpcCall } from '$lib/rpc';
   import OfferPieceThumb from '$lib/components/OfferPieceThumb.svelte';
@@ -45,19 +45,23 @@
     expanded: boolean;
   };
 
+  // data comes from +page.ts and does not change after load, so snapshotting
+  // it into $state here is intentional. untrack silences the Svelte 5 lint.
   let pieces: PieceOffers[] = $state(
-    data.livePieces.map((lp) => ({
-      slug: lp.piece.slug,
-      currencyName: lp.piece.friendlyName.replace(/@$/, ''),
-      iaddr: lp.piece.iaddr,
-      deliveryTxid: lp.deliveryTxid,
-      evk: lp.evk,
-      filename: lp.filename,
-      loading: false,
-      error: null,
-      offers: [],
-      expanded: false,
-    }))
+    untrack(() =>
+      data.livePieces.map((lp) => ({
+        slug: lp.piece.slug,
+        currencyName: lp.piece.friendlyName.replace(/@$/, ''),
+        iaddr: lp.piece.iaddr,
+        deliveryTxid: lp.deliveryTxid,
+        evk: lp.evk,
+        filename: lp.filename,
+        loading: false,
+        error: null,
+        offers: [],
+        expanded: false,
+      }))
+    )
   );
 
   let currentHeight: number | null = $state(null);
@@ -506,10 +510,6 @@
     font-family: var(--font-body);
     font-size: 0.9rem;
     color: var(--color-ivory);
-  }
-  .offer-detail .value.mono {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
   }
   /* Txid gets full-width — a 64-char hash does not fit a 1fr column cleanly. */
   .offer-detail-txid {
