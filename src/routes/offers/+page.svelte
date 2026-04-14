@@ -1,10 +1,15 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { CHAIN, MANIFEST } from '$lib/env';
   import { rpcCall } from '$lib/rpc';
   import OfferPieceThumb from '$lib/components/OfferPieceThumb.svelte';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
+
+  // Fetch the tip once on page load so the badge shows immediately,
+  // not only after the user expands their first piece.
+  onMount(() => { fetchBlockHeight(); });
 
   const VRSC_IADDR = 'i5w5MuNik5NtLcYmNzcvaoixooEebB6MGV';
 
@@ -76,12 +81,19 @@
     }
   }
 
+  let heightRefreshing: boolean = $state(false);
+
   async function fetchBlockHeight() {
+    heightRefreshing = true;
     try {
-      const res = await rpcCall<{ blocks: number }>(CHAIN, 'getinfo', []);
-      currentHeight = res.data.blocks;
+      // getblockcount returns the height as a raw JSON number — no object to parse.
+      const res = await rpcCall<number>(CHAIN, 'getblockcount', []);
+      currentHeight = res.data;
+      heightError = null;
     } catch {
       heightError = 'Could not fetch current block height';
+    } finally {
+      heightRefreshing = false;
     }
   }
 
@@ -169,9 +181,20 @@
     return blockExpiry <= currentHeight;
   }
 
-  function truncateTxid(txid: string): string {
-    if (txid.length <= 16) return txid;
-    return txid.slice(0, 8) + '...' + txid.slice(-8);
+  // Per-txid "just copied" flash. Cleared after 1.5s.
+  let copiedTxids: Record<string, boolean> = $state({});
+
+  async function copyTxid(txid: string) {
+    try {
+      await navigator.clipboard.writeText(txid);
+      copiedTxids = { ...copiedTxids, [txid]: true };
+      setTimeout(() => {
+        copiedTxids = { ...copiedTxids, [txid]: false };
+      }, 1500);
+    } catch {
+      // Clipboard API unavailable (non-HTTPS dev server or permission denied).
+      // Silently ignore — the full txid is still visible for manual selection.
+    }
   }
 </script>
 
@@ -193,11 +216,25 @@
     </p>
   </header>
 
-  {#if currentHeight !== null}
-    <p class="chain-height">
-      Current block height: <code>{currentHeight.toLocaleString()}</code>
-    </p>
-  {/if}
+  <p class="chain-height">
+    Current block height:
+    {#if currentHeight !== null}
+      <code>{currentHeight.toLocaleString()}</code>
+    {:else if heightError}
+      <span class="height-error">{heightError}</span>
+    {:else}
+      <span class="height-pending">…</span>
+    {/if}
+    <button
+      type="button"
+      class="refresh-btn"
+      onclick={fetchBlockHeight}
+      disabled={heightRefreshing}
+      aria-label="Refresh current block height"
+    >
+      {heightRefreshing ? 'Refreshing…' : 'Refresh'}
+    </button>
+  </p>
 
   <div class="piece-list">
     {#each pieces as piece, i (piece.iaddr)}
@@ -264,10 +301,18 @@
                       {/if}
                     </span>
                   </div>
-                  <div class="offer-detail">
+                  <div class="offer-detail offer-detail-txid">
                     <span class="label">Txid</span>
-                    <span class="value mono" title={offer.txid}>
-                      {truncateTxid(offer.txid)}
+                    <span class="txid-row">
+                      <code class="txid-full">{offer.txid}</code>
+                      <button
+                        type="button"
+                        class="copy-btn"
+                        onclick={() => copyTxid(offer.txid)}
+                        aria-label="Copy txid to clipboard"
+                      >
+                        {copiedTxids[offer.txid] ? 'Copied' : 'Copy'}
+                      </button>
                     </span>
                   </div>
                 </div>
@@ -324,10 +369,43 @@
     font-size: 0.85rem;
     color: var(--color-ash);
     margin-bottom: var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
   }
   .chain-height code {
     font-family: var(--font-mono);
     color: var(--color-ivory-dim);
+  }
+  .height-pending,
+  .height-error {
+    font-family: var(--font-mono);
+    color: var(--color-ivory-dim);
+  }
+  .height-error {
+    color: var(--color-vermilion);
+  }
+  .refresh-btn {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ash);
+    background: transparent;
+    border: 1px solid var(--color-hairline);
+    border-radius: 3px;
+    padding: 0.3em 0.7em;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .refresh-btn:hover:not(:disabled) {
+    color: var(--color-ivory);
+    border-color: var(--color-vermilion);
+  }
+  .refresh-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
   }
 
   .piece-list {
@@ -427,6 +505,42 @@
   .offer-detail .value.mono {
     font-family: var(--font-mono);
     font-size: 0.8rem;
+  }
+  /* Txid gets full-width — a 64-char hash does not fit a 1fr column cleanly. */
+  .offer-detail-txid {
+    grid-column: 1 / -1;
+  }
+  .txid-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .txid-full {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--color-ivory);
+    word-break: break-all;
+    min-width: 0;
+    flex: 1;
+  }
+  .copy-btn {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ash);
+    background: transparent;
+    border: 1px solid var(--color-hairline);
+    border-radius: 3px;
+    padding: 0.3em 0.7em;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .copy-btn:hover {
+    color: var(--color-ivory);
+    border-color: var(--color-vermilion);
   }
   .offer-detail .value.expired {
     color: var(--color-ash);
