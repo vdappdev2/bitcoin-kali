@@ -132,14 +132,19 @@
           const offerAmounts = offer.offer ?? {};
           const acceptAmounts = offer.accept ?? {};
 
-          // Find offering currency + amount
+          // Find offering currency + amount.
+          // offer.offer contains the asset being offered PLUS a small VRSC
+          // dust output that keeps the offer UTXO alive on-chain. Prefer the
+          // non-VRSC entry (the actual asset); fall back to VRSC if that's all
+          // there is.
           let offeringCurrency = '';
           let offeringAmount = 0;
           for (const [addr, amt] of Object.entries(offerAmounts)) {
-            if (typeof amt === 'number' && amt > 0) {
-              offeringCurrency = await resolveCurrencyName(addr);
-              offeringAmount = amt;
-            }
+            if (typeof amt !== 'number' || amt <= 0) continue;
+            if (addr === VRSC_IADDR && offeringCurrency !== '') continue;
+            offeringCurrency = await resolveCurrencyName(addr);
+            offeringAmount = amt;
+            if (addr !== VRSC_IADDR) break;
           }
 
           // Find asking currency + amount
