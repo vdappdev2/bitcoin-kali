@@ -37,7 +37,6 @@
     content="Seven generative digital works, each a Verus identity. Typed VDXF contentmultimap provenance, curator-signed mmrroots, publicly-verifiable encrypted delivery."
   />
   <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />
   <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable project summary" />
   {@html `<script type="application/ld+json">${jsonldSafe}</script>`}
 </svelte:head>

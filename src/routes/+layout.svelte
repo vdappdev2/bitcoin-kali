@@ -15,6 +15,12 @@
     name="description"
     content="Bitcoin Kali — a seven-piece Verus NFT series with on-chain identity, typed VDXF contentmultimap provenance, curator-signed mmrroots, and publicly-verifiable encrypted file delivery. Every claim on this site is checkable against the Verus blockchain."
   />
+  <meta property="og:site_name" content="Bitcoin Kali" />
+  <meta property="og:image" content="https://bitcoinkali.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://bitcoinkali.com/og-image.png" />
 </svelte:head>
 
 <header class="site-header">

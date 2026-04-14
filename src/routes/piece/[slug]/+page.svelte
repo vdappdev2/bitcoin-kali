@@ -99,11 +99,6 @@
   <meta property="og:title" content={`${content.name} — Bitcoin Kali piece ${piece.position} of 7`} />
   <meta property="og:description" content={metaDescription} />
   <meta property="og:type" content="article" />
-  {#if imageUrl}
-    <meta property="og:image" content={imageUrl} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content={imageUrl} />
-  {/if}
   <meta property="article:section" content="Bitcoin Kali — Series 1" />
   {@html `<script type="application/ld+json">${jsonldSafe}</script>`}
 </svelte:head>
