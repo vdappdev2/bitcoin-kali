@@ -208,6 +208,7 @@
   </section>
 
   <nav class="footer-nav" aria-label="Piece navigation">
+    <a href="/offers">View offers →</a>
     <a href="/gallery">← Back to gallery</a>
   </nav>
 </article>
@@ -388,6 +389,10 @@
     margin-top: var(--space-7);
     padding-top: var(--space-4);
     border-top: 1px solid var(--color-hairline);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
   }
   .footer-nav a {
     color: var(--color-ivory);

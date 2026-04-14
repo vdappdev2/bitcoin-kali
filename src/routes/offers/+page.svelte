@@ -1,6 +1,10 @@
 <script lang="ts">
   import { CHAIN, MANIFEST } from '$lib/env';
   import { rpcCall } from '$lib/rpc';
+  import OfferPieceThumb from '$lib/components/OfferPieceThumb.svelte';
+  import type { PageData } from './$types';
+
+  let { data }: { data: PageData } = $props();
 
   const VRSC_IADDR = 'i5w5MuNik5NtLcYmNzcvaoixooEebB6MGV';
 
@@ -25,9 +29,11 @@
 
   type PieceOffers = {
     slug: string;
-    friendlyName: string;
     currencyName: string;
     iaddr: string;
+    deliveryTxid: string;
+    evk: string;
+    filename: string;
     loading: boolean;
     error: string | null;
     offers: ParsedOffer[];
@@ -35,11 +41,13 @@
   };
 
   let pieces: PieceOffers[] = $state(
-    MANIFEST.pieces.map((p) => ({
-      slug: p.slug,
-      friendlyName: p.friendlyName,
-      currencyName: p.friendlyName.replace(/@$/, ''),
-      iaddr: p.iaddr,
+    data.livePieces.map((lp) => ({
+      slug: lp.piece.slug,
+      currencyName: lp.piece.friendlyName.replace(/@$/, ''),
+      iaddr: lp.piece.iaddr,
+      deliveryTxid: lp.deliveryTxid,
+      evk: lp.evk,
+      filename: lp.filename,
       loading: false,
       error: null,
       offers: [],
@@ -194,18 +202,27 @@
   <div class="piece-list">
     {#each pieces as piece, i (piece.iaddr)}
       <div class="piece-card" class:expanded={piece.expanded}>
-        <button class="piece-header" onclick={() => fetchOffers(i)}>
-          <div class="piece-info">
-            <span class="piece-name">{piece.friendlyName}</span>
-            <span class="piece-currency">
-              Token: <code>{piece.currencyName}</code>
-            </span>
-          </div>
-          <span class="toggle">{piece.expanded ? '−' : '+'}</span>
-        </button>
+        <div class="piece-header">
+          <OfferPieceThumb
+            slug={piece.slug}
+            name={piece.currencyName}
+            deliveryTxid={piece.deliveryTxid}
+            evk={piece.evk}
+            filename={piece.filename}
+          />
+          <button
+            class="piece-toggle"
+            onclick={() => fetchOffers(i)}
+            aria-expanded={piece.expanded}
+            aria-controls="piece-body-{i}"
+          >
+            <span class="piece-name">{piece.currencyName}</span>
+            <span class="toggle" aria-hidden="true">{piece.expanded ? '−' : '+'}</span>
+          </button>
+        </div>
 
         {#if piece.expanded}
-          <div class="piece-body">
+          <div class="piece-body" id="piece-body-{i}">
             {#if piece.loading}
               <p class="status">Querying chain...</p>
             {:else if piece.error && piece.offers.length === 0}
@@ -328,39 +345,38 @@
     border-color: var(--color-vermilion);
   }
   .piece-header {
-    width: 100%;
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-ivory);
+  }
+  .piece-toggle {
+    flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-3) var(--space-4);
+    gap: var(--space-3);
     background: transparent;
     border: none;
     cursor: pointer;
     text-align: left;
     color: var(--color-ivory);
+    padding: 0;
   }
-  .piece-header:hover {
-    background: rgba(255, 255, 255, 0.03);
-  }
-  .piece-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+  .piece-toggle:hover .piece-name {
+    color: var(--color-vermilion);
   }
   .piece-name {
-    font-family: var(--font-body);
-    font-size: 1rem;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    line-height: 1.2;
     color: var(--color-ivory);
-  }
-  .piece-currency {
-    font-family: var(--font-body);
-    font-size: 0.8rem;
-    color: var(--color-ash);
-  }
-  .piece-currency code {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--color-ivory-dim);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .toggle {
     font-family: var(--font-mono);
