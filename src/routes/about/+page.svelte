@@ -112,7 +112,7 @@
       <li><a href="https://docs.verus.io" target="_blank" rel="noopener">docs.verus.io</a> — Verus documentation</li>
       <li><a href="https://discord.com/invite/Mur4c8dgxD" target="_blank" rel="noopener">Verus Discord</a> — community</li>
       <li><a href="/gallery">Gallery</a> — the seven pieces</li>
-      <li><a href="/learn">Learn</a> — eight guides to the Verus primitives used here</li>
+      <li><a href="/learn">Learn</a> — ten guides to the Verus primitives used here</li>
     </ul>
   </section>
 

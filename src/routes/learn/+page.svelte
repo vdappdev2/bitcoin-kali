@@ -6,7 +6,7 @@
   <title>Learn — Bitcoin Kali</title>
   <meta
     name="description"
-    content="Eight short guides to the Verus primitives behind Bitcoin Kali: VDXF keys, contentmultimaps, signdata, verifysignature, identity, encrypted delivery, on-chain rights, and the trust model."
+    content="Ten short guides to the Verus primitives behind Bitcoin Kali: VDXF keys, contentmultimaps, signdata, verifysignature, identity, encrypted delivery, on-chain rights, the trust model, ID control tokens, and the Verus marketplace."
   />
 </svelte:head>
 
@@ -21,7 +21,7 @@
       public RPC.
     </p>
     <p class="lede">
-      These eight pages walk through each primitive with real mainnet data:
+      These ten pages walk through each primitive with real mainnet data:
       actual i-addresses, transaction IDs, block heights, and hex values you
       can check yourself. Every page links to the live viewer so you can
       watch the proof reconstruct in front of you.
