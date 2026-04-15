@@ -42,7 +42,9 @@
       dependency to break. No IPFS pin to expire, no server to go offline,
       no API to rate-limit. Anyone with a Verus node (or access to a public
       RPC endpoint) can call <code>getidentity</code>, <code>getidentitycontent</code>, or <code>getidentityhistory</code> and read the full CMM
-      directly. This viewer uses <code>getidentity</code>.
+      directly. This viewer uses <code>getidentity</code> pinned to each piece's
+      registration block, so the CMM shown reflects the original signed state
+      regardless of any later <code>updateidentity</code> changes.
     </p>
     <p>
       The typed DataDescriptor format means each entry carries its own

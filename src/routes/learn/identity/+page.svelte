@@ -139,9 +139,12 @@
     </dl>
     <p>
       Each of these is queryable with a single call:
-      <code>getidentity "Destroyer of Fiat.bitcoins@"</code>. The returned
-      object includes the full contentmultimap, primary addresses, and all
-      authority keys.
+      <code>getidentity "Destroyer of Fiat.bitcoins@"</code>. An optional
+      second argument pins the lookup to a specific block height — this
+      viewer uses each piece's registration height, so what you see here
+      is always the original signed state, not a mutable later version.
+      The returned object includes the full contentmultimap, primary
+      addresses, and the revocation and recovery authorities.
     </p>
   </section>
 
