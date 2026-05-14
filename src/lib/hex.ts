@@ -19,7 +19,7 @@
 
 const HEX_RE = /^[0-9a-f]*$/;
 
-export function hexToBytes(hex: string): Uint8Array {
+export function hexToBytes(hex: string): Uint8Array<ArrayBuffer> {
   if (hex.length % 2 !== 0) {
     throw new Error(`hexToBytes: odd-length hex (${hex.length})`);
   }

@@ -107,7 +107,7 @@ export type DecryptDataResponse = Array<{
 
 /** In-memory cache: deliveryTxid → PNG bytes. Survives navigation within
  *  a single session so the gallery ↔ piece transitions don't re-decrypt. */
-const pngCache = new Map<string, Uint8Array>();
+const pngCache = new Map<string, Uint8Array<ArrayBuffer>>();
 
 /**
  * Fetch the PNG bytes for a piece via `decryptdata`.
@@ -121,7 +121,7 @@ export async function fetchPngBytes(
   _filename: string,
   deliveryTxid: string,
   evk: string
-): Promise<Uint8Array> {
+): Promise<Uint8Array<ArrayBuffer>> {
   const cached = pngCache.get(deliveryTxid);
   if (cached) return cached;
 

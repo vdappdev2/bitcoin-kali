@@ -336,8 +336,9 @@
   <section class="learn-more">
     <p>
       Learn how control tokens and the marketplace work:
-      <a href="/learn/control-tokens">ID Control Tokens</a> and
-      <a href="/learn/marketplace">Verus Marketplace</a>.
+      <a href="/learn/control-tokens">ID Control Tokens</a>,
+      <a href="/learn/marketplace">Verus Marketplace</a>, and
+      <a href="/learn/rpc-builders">RPC Builders</a>.
     </p>
   </section>
 </article>
